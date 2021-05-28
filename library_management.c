@@ -21,5 +21,24 @@ typedef struct
 
 int main()
 {
+    FILE *f;
+
+    f = fopen("library.check","r");
+
+    if(f == NULL){
+        fclose(f);
+
+        f = fopen("library.check","w");
+
+        fputc(1,f);
+
+        fclose(f);
+
+    }
+    else{
+        fclose(f);
+    }
+
+
 
 }
