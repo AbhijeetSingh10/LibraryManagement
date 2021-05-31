@@ -3,6 +3,13 @@
 #include <string.h>
 #include <conio.h>
 
+void flush()
+{
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF)
+        ;
+}
+
 typedef struct
 {
     char username[15];
@@ -12,21 +19,21 @@ typedef struct
 typedef struct
 {
     int id;
+    int taken;
     char title[50];
     char author[50];
     char category[50];
     char publicaton[50];
     char description[500];
-    int taken;
 
 } Book;
 
 int main()
 {
-    int clrscr();
     char username[15], password[15];
     User user;
-    int choice, firstTime;
+    Book book;
+    int choice, option, firstTime, id;
     FILE *f;
 
     f = fopen("librarian.check", "r");
@@ -142,7 +149,49 @@ int main()
                     printf("2. Search Book\n");
                     printf("3. Update Book\n");
                     printf("4. Delete Book\n");
-                    printf("5. Monitor Student request\n");
+                    printf("4. Monitor Student request\n");
+                    printf("Choose option Option\n");
+                    scanf("%d", &option);
+                    printf("You chose : %d\n");
+
+                    switch (option)
+                    {
+                    case 1:
+                        flush();
+                        printf("Provide book info\n");
+                        printf("Author: \n");
+                        fgets(book.author, 50, stdin);
+                        printf("Title: \n");
+                        fgets(book.title, 50, stdin);
+                        printf("Category: \n");
+                        fgets(book.category, 50, stdin);
+                        printf("Publicaion: \n");
+                        fgets(book.publicaton, 50, stdin);
+                        printf("Description: \n");
+                        fgets(book.description, 500, stdin);
+                        book.taken = 0;
+
+                        f = fopen("id.check", "r");
+
+                        if (f == NULL)
+                        {
+                            printf("Something went wrong!!!");
+                            exit(0);
+                        }
+                        id = fgetc(f);
+                        book.id = id;
+                        id++;
+                        fclose(f);
+
+                        f = fopen("id.check", "w");
+                        fputc(id, f);
+                        fclose(f);
+
+                        break;
+
+                    default:
+                        break;
+                    }
                 }
             }
         }
