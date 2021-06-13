@@ -23,7 +23,7 @@ typedef struct
     char title[50];
     char author[50];
     char category[50];
-    char publicaton[50];
+    char publication[50];
     char description[500];
 
 } Book;
@@ -33,7 +33,7 @@ int main()
     char username[15], password[15];
     User user;
     Book book;
-    int choice, option, firstTime, id;
+    int choice, option, firstTime, id, i, found;
     FILE *f;
 
     f = fopen("librarian.check", "r");
@@ -86,7 +86,7 @@ int main()
         if (f == NULL)
         {
             printf("Something went wrong\n");
-            exit(0);
+            exit(1);
         }
         else
         {
@@ -130,13 +130,14 @@ int main()
                 if (f == NULL)
                 {
                     printf("Something went wrong!");
-                    exit(0);
+                    exit(1);
                 }
                 else
                 {
                     fread(&user, sizeof(User), 1, f);
 
-                    if (strcmp(username, user.username) != 0 || strcmp(password, user.password) != 0)
+                    if (strcmp(username, user.username) != 0 || strcmp(password, user.password) != 0) // A value equal to zero when both strings are found to be identical
+                                                                                                      //That is, All of the characters in both strings are same.
                     {
                         printf("Invalid username or password!\n");
                         exit(0);
@@ -150,9 +151,9 @@ int main()
                     printf("3. Update Book\n");
                     printf("4. Delete Book\n");
                     printf("4. Monitor Student request\n");
-                    printf("Choose option Option\n");
+                    printf("Choose Option\n");
                     scanf("%d", &option);
-                    printf("You chose : %d\n");
+                    printf("You chose : %d\n", option);
 
                     switch (option)
                     {
@@ -165,8 +166,8 @@ int main()
                         fgets(book.title, 50, stdin);
                         printf("Category: \n");
                         fgets(book.category, 50, stdin);
-                        printf("Publicaion: \n");
-                        fgets(book.publicaton, 50, stdin);
+                        printf("Publication: \n");
+                        fgets(book.publication, 50, stdin);
                         printf("Description: \n");
                         fgets(book.description, 500, stdin);
                         book.taken = 0;
@@ -176,17 +177,60 @@ int main()
                         if (f == NULL)
                         {
                             printf("Something went wrong!!!");
-                            exit(0);
+                            exit(1);
                         }
+
                         id = fgetc(f);
+                        fclose(f);
                         book.id = id;
-                        id++;
+
+                        f = fopen("book.record", "a");
+                        fwrite(&book, sizeof(Book), 1, f);
                         fclose(f);
 
+                        printf("\nBook ID is %d\n", book.id);
+
+                        id++;
                         f = fopen("id.check", "w");
                         fputc(id, f);
                         fclose(f);
 
+                        printf("\nBook insertion Successful\n");
+
+                        break;
+
+                    case 2:
+
+                        printf("Provide book id to search the book\n");
+                        scanf("%d", &id);
+
+                        // search book from the records
+                        f = fopen("book.record", "r");
+                        found = 0;
+                        i = 0;
+
+                        while (fread(&book, sizeof(Book), 1, f))
+                        {
+                            if (book.id == id)
+                            {
+                                found = 1;
+                                printf("Book found\n");
+                                printf("Author: %s\n", book.author);
+                                printf("Title: %s\n", book.title);
+                                printf("Caetegory: %s\n", book.category);
+                                printf("Publication: %s\n", book.publication);
+                                printf("Description: %s\n", book.description);
+                                break;
+                            }
+                            i++;
+                        }
+
+                        if (found == 0)
+                        {
+                            printf("Sorry this book is not in our database.\n");
+                        }
+
+                        fclose(f);
                         break;
 
                     default:
